@@ -3,7 +3,7 @@ BA Task Manager - Production Backend
 Built for Railway.app / Render.com deployment
 """
 
-from flask import Flask, request, jsonify, send_file, render_template_string
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
@@ -433,13 +433,17 @@ def generate_report():
 @app.route('/')
 def index():
     """Serve the web interface"""
-    return render_template_string(get_html_template())
-
-
-def get_html_template():
-    """Return the HTML template"""
-    with open(Path(__file__).parent / 'templates' / 'index.html', 'r') as f:
-        return f.read()
+    try:
+        # Try to load from file
+        html_path = Path(__file__).parent / 'index.html'
+        if html_path.exists():
+            with open(html_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        else:
+            return "Error: index.html not found", 404
+    except Exception as e:
+        logger.error(f"Error loading index.html: {e}")
+        return f"Error: {str(e)}", 500
 
 
 # ==================== INITIALIZATION ====================
@@ -447,4 +451,4 @@ def get_html_template():
 if __name__ == '__main__':
     init_excel()
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
