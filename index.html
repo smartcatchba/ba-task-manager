@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BA Task Manager - Professional Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #0ea5e9;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --border-radius: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--gray-700);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-left h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--success);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge.disconnected {
+            background: var(--danger);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content */
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Forms */
+        .form-card {
+            background: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .form-card h2 {
+            color: var(--gray-800);
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Multi-select */
+        .multi-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid var(--gray-200);
+            border-radius: 6px;
+            min-height: 40px;
+            background: var(--gray-50);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .tag button:hover {
+            opacity: 0.8;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Cards/List */
+        .card {
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 15px;
+        }
+
+        .card-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .card-status[data-status="Lead Assigned"] {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .card-status[data-status="Working on Lead"] {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .card-status[data-status="Document Submitted"] {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .card-status[data-status="Project Won"] {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .card-status[data-status="Project Lost"] {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .card-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .card-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-detail-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab-btn {
+                flex: 0 1 auto;
+                min-width: 100px;
+            }
+
+            .card-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-left">
+                <h1>📊 BA Task Manager</h1>
+                <p>Professional Task & Project Management</p>
+            </div>
+            <div class="header-right">
+                <div class="status-badge" id="connectionStatus">
+                    <div class="status-dot"></div>
+                    <span>Connecting...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tasks')">📝 Tasks</button>
+            <button class="tab-btn" onclick="switchTab('projects')">🎯 Projects</button>
+            <button class="tab-btn" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('reports')">📄 Reports</button>
+        </div>
+
+        <!-- TASKS TAB -->
+        <div id="tasks" class="content active">
+            <div class="form-card">
+                <h2>📋 Log New Task</h2>
+                <div id="taskSuccessMessage" class="message success"></div>
+                <div id="taskErrorMessage" class="message error"></div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Task Name *</label>
+                        <input type="text" id="taskName" placeholder="e.g., Setup Adobe Commerce">
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="taskDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Project *</label>
+                        <input type="text" id="taskProject" placeholder="e.g., Al Hajery Plus">
+                    </div>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <input type="text" id="taskClient" placeholder="e.g., Kuwait Pharmacy Group">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Estimated Time (min) *</label>
+                        <input type="number" id="taskEstimated" placeholder="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Actual Time (min) *</label>
+                        <input type="number" id="taskActual" placeholder="75">
+                    </div>
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="taskStatus">
+                            <option value="">Select Status</option>
+                            <option value="Lead Assigned">Lead Assigned</option>
+                            <option value="Working on Lead">Working on Lead</option>
+                            <option value="Document Submitted">Document Submitted</option>
+                            <option value="Project Won">Project Won</option>
+                            <option value="Project Lost">Project Lost</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Revenue</label>
+                        <input type="number" id="taskRevenue" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Technologies *</label>
+                    <div id="taskTechTags" class="multi-select"></div>
+                    <div class="options-grid" id="taskTechOptions"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Team Members *</label>
+                    <div id="taskTeamTags" class="multi-select"></div>
+                    <div class="options-grid" id="taskTeamOptions"></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Lead Source</label>
+                        <input type="text" id="taskLead" placeholder="e.g., Referral">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="taskNotes" placeholder="Additional notes..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="taskSubmitBtn" onclick="addTask()">💾 Log Task</button>
+                    <button class="btn btn-secondary" onclick="clearTaskForm()">Clear</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2>📅 Today's Tasks</h2>
+                <div id="todayTasksList"></div>
+            </div>
+        </div>
+
+        <!-- PROJECTS TAB -->
+        <div id="projects" class="content">
+            <div class="form-card">
+                <h2>🎯 Create New Project</h2>
+                <div id="projSuccessMessage" class="message success"></div>
+                <div id="projErrorMessage" class="message error"></div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Project Name *</label>
+                        <input type="text" id="projName" placeholder="e.g., Al Hajery Plus Migration">
+                    </div>
+                    <div class="form-group">
+                        <label>Client *</label>
+                        <input type="text" id="projClient" placeholder="e.g., Kuwait Pharmacy Group">
+                    </div>
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="projStatus">
+                            <option value="">Select Status</option>
+                            <option value="Lead Assigned">Lead Assigned</option>
+                            <option value="Working on Lead">Working on Lead</option>
+                            <option value="Document Submitted">Document Submitted</option>
+                            <option value="Project Won">Project Won</option>
+                            <option value="Project Lost">Project Lost</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date *</label>
+                        <input type="date" id="projStart">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Estimated Revenue</label>
+                        <input type="number" id="projRevenue" placeholder="500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Lead Source</label>
+                        <input type="text" id="projLead" placeholder="e.g., Referral">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Technologies *</label>
+                    <div id="projTechTags" class="multi-select"></div>
+                    <div class="options-grid" id="projTechOptions"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="projNotes" placeholder="Project details..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="projSubmitBtn" onclick="addProject()">💾 Create Project</button>
+                    <button class="btn btn-secondary" onclick="clearProjectForm()">Clear</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2>📌 Active Projects</h2>
+                <div id="projectsList"></div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="content">
+            <div class="form-card">
+                <h2>📊 Performance Dashboard</h2>
+                <div class="dashboard-grid" id="dashboardStats"></div>
+            </div>
+
+            <div class="form-card">
+                <h2>🔍 Tasks by Project</h2>
+                <div class="table-container">
+                    <table id="dashboardTable">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Tasks</th>
+                                <th>Status</th>
+                                <th>Avg Time (min)</th>
+                                <th>Total Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTS TAB -->
+        <div id="reports" class="content">
+            <div class="form-card">
+                <h2>📄 Generate Manager Report</h2>
+                <div id="reportSuccessMessage" class="message success"></div>
+                <div id="reportErrorMessage" class="message error"></div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Report Type *</label>
+                        <select id="reportType">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="reportDate">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateReport()">📋 Generate Report</button>
+                    <button class="btn btn-secondary" onclick="downloadExcel()">⬇️ Download Excel</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2>📑 Report Output</h2>
+                <div id="reportOutput" style="padding: 16px; background: var(--gray-50); border-radius: 6px; min-height: 200px; white-space: pre-wrap; font-family: monospace; font-size: 13px; line-height: 1.6;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        const TECHNOLOGIES = ['Adobe Commerce Cloud', 'Magento', 'Shopify', 'Shopify Plus', 'Managed Services', 'Mobile App', 'MERN', 'AEP', 'AEM'];
+        const TEAM_ROLES = ['Self', 'Project Manager', 'Developer', 'Designer', 'QA', 'Client'];
+
+        let selectedTechs = [];
+        let selectedTeam = [];
+        let selectedProjTechs = [];
+        let allTasks = [];
+        let allProjects = [];
+
+        // ==================== INITIALIZATION ====================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('taskDate').value = today;
+            document.getElementById('projStart').value = today;
+            document.getElementById('reportDate').value = today;
+
+            initializeTechOptions();
+            initializeTeamOptions();
+            initializeProjTechOptions();
+
+            checkConnection();
+            setInterval(checkConnection, 5000);
+
+            loadAllData();
+        });
+
+        function initializeTechOptions() {
+            const container = document.getElementById('taskTechOptions');
+            container.innerHTML = TECHNOLOGIES.map(tech => 
+                `<button type="button" class="option-btn" onclick="toggleTech('${tech}')">${tech}</button>`
+            ).join('');
+        }
+
+        function initializeTeamOptions() {
+            const container = document.getElementById('taskTeamOptions');
+            container.innerHTML = TEAM_ROLES.map(role => 
+                `<button type="button" class="option-btn" onclick="toggleTeam('${role}')">${role}</button>`
+            ).join('');
+        }
+
+        function initializeProjTechOptions() {
+            const container = document.getElementById('projTechOptions');
+            container.innerHTML = TECHNOLOGIES.map(tech => 
+                `<button type="button" class="option-btn" onclick="toggleProjTech('${tech}')">${tech}</button>`
+            ).join('');
+        }
+
+        // ==================== CONNECTION ====================
+
+        async function checkConnection() {
+            try {
+                const response = await fetch(API_URL.replace('/api', '/health'));
+                if (response.ok) {
+                    updateConnectionStatus(true);
+                } else {
+                    updateConnectionStatus(false);
+                }
+            } catch {
+                updateConnectionStatus(false);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const badge = document.getElementById('connectionStatus');
+            if (connected) {
+                badge.classList.remove('disconnected');
+                badge.innerHTML = '<div class="status-dot"></div><span>✓ Connected</span>';
+            } else {
+                badge.classList.add('disconnected');
+                badge.innerHTML = '<div class="status-dot"></div><span>✗ Disconnected</span>';
+            }
+        }
+
+        // ==================== UTILITY ====================
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'dashboard') {
+                loadDashboard();
+            } else if (tabName === 'reports') {
+                // Pre-load today's data
+            }
+        }
+
+        function showMessage(elementId, message, type = 'success') {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.add('show', type);
+            setTimeout(() => {
+                el.classList.remove('show', type);
+            }, 4000);
+        }
+
+        function showError(elementId, message) {
+            showMessage(elementId, message, 'error');
+        }
+
+        // ==================== TASK MANAGEMENT ====================
+
+        function toggleTech(tech) {
+            const idx = selectedTechs.indexOf(tech);
+            if (idx > -1) {
+                selectedTechs.splice(idx, 1);
+            } else {
+                selectedTechs.push(tech);
+            }
+            updateTechDisplay();
+        }
+
+        function toggleTeam(role) {
+            const idx = selectedTeam.indexOf(role);
+            if (idx > -1) {
+                selectedTeam.splice(idx, 1);
+            } else {
+                selectedTeam.push(role);
+            }
+            updateTeamDisplay();
+        }
+
+        function toggleProjTech(tech) {
+            const idx = selectedProjTechs.indexOf(tech);
+            if (idx > -1) {
+                selectedProjTechs.splice(idx, 1);
+            } else {
+                selectedProjTechs.push(tech);
+            }
+            updateProjTechDisplay();
+        }
+
+        function updateTechDisplay() {
+            document.getElementById('taskTechOptions').querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.toggle('selected', selectedTechs.includes(btn.textContent));
+            });
+            document.getElementById('taskTechTags').innerHTML = selectedTechs.map(tech =>
+                `<div class="tag">${tech} <button onclick="toggleTech('${tech}')">×</button></div>`
+            ).join('');
+        }
+
+        function updateTeamDisplay() {
+            document.getElementById('taskTeamOptions').querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.toggle('selected', selectedTeam.includes(btn.textContent));
+            });
+            document.getElementById('taskTeamTags').innerHTML = selectedTeam.map(role =>
+                `<div class="tag">${role} <button onclick="toggleTeam('${role}')">×</button></div>`
+            ).join('');
+        }
+
+        function updateProjTechDisplay() {
+            document.getElementById('projTechOptions').querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.toggle('selected', selectedProjTechs.includes(btn.textContent));
+            });
+            document.getElementById('projTechTags').innerHTML = selectedProjTechs.map(tech =>
+                `<div class="tag">${tech} <button onclick="toggleProjTech('${tech}')">×</button></div>`
+            ).join('');
+        }
+
+        async function addTask() {
+            const task = {
+                taskName: document.getElementById('taskName').value,
+                taskDate: document.getElementById('taskDate').value,
+                taskProject: document.getElementById('taskProject').value,
+                taskClient: document.getElementById('taskClient').value,
+                taskEstimated: parseInt(document.getElementById('taskEstimated').value) || 0,
+                taskActual: parseInt(document.getElementById('taskActual').value) || 0,
+                taskStatus: document.getElementById('taskStatus').value,
+                taskRevenue: parseInt(document.getElementById('taskRevenue').value) || 0,
+                taskLead: document.getElementById('taskLead').value,
+                taskNotes: document.getElementById('taskNotes').value,
+                technologies: [...selectedTechs],
+                teamMembers: [...selectedTeam]
+            };
+
+            if (!task.taskName || !task.taskDate || !task.taskProject || !task.taskStatus || selectedTechs.length === 0 || selectedTeam.length === 0) {
+                showError('taskErrorMessage', 'Please fill all required fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(task)
+                });
+
+                if (response.ok) {
+                    showMessage('taskSuccessMessage', '✅ Task logged successfully!');
+                    clearTaskForm();
+                    loadAllData();
+                } else {
+                    const error = await response.json();
+                    showError('taskErrorMessage', error.error || 'Failed to log task');
+                }
+            } catch (e) {
+                showError('taskErrorMessage', 'Connection error: ' + e.message);
+            }
+        }
+
+        async function deleteTask(id) {
+            if (!confirm('Delete this task?')) return;
+            try {
+                const response = await fetch(`${API_URL}/tasks/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadAllData();
+                } else {
+                    showError('taskErrorMessage', 'Failed to delete task');
+                }
+            } catch (e) {
+                showError('taskErrorMessage', 'Error: ' + e.message);
+            }
+        }
+
+        function clearTaskForm() {
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('taskProject').value = '';
+            document.getElementById('taskClient').value = '';
+            document.getElementById('taskEstimated').value = '';
+            document.getElementById('taskActual').value = '';
+            document.getElementById('taskStatus').value = '';
+            document.getElementById('taskRevenue').value = '';
+            document.getElementById('taskLead').value = '';
+            document.getElementById('taskNotes').value = '';
+            selectedTechs = [];
+            selectedTeam = [];
+            updateTechDisplay();
+            updateTeamDisplay();
+        }
+
+        // ==================== PROJECT MANAGEMENT ====================
+
+        function toggleProjTech(tech) {
+            const idx = selectedProjTechs.indexOf(tech);
+            if (idx > -1) {
+                selectedProjTechs.splice(idx, 1);
+            } else {
+                selectedProjTechs.push(tech);
+            }
+            updateProjTechDisplay();
+        }
+
+        async function addProject() {
+            const project = {
+                projName: document.getElementById('projName').value,
+                projClient: document.getElementById('projClient').value,
+                projStatus: document.getElementById('projStatus').value,
+                projStart: document.getElementById('projStart').value,
+                projRevenue: parseInt(document.getElementById('projRevenue').value) || 0,
+                projLead: document.getElementById('projLead').value,
+                projNotes: document.getElementById('projNotes').value,
+                technologies: [...selectedProjTechs]
+            };
+
+            if (!project.projName || !project.projClient || !project.projStatus || selectedProjTechs.length === 0) {
+                showError('projErrorMessage', 'Please fill all required fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(project)
+                });
+
+                if (response.ok) {
+                    showMessage('projSuccessMessage', '✅ Project created successfully!');
+                    clearProjectForm();
+                    loadAllData();
+                } else {
+                    const error = await response.json();
+                    showError('projErrorMessage', error.error || 'Failed to create project');
+                }
+            } catch (e) {
+                showError('projErrorMessage', 'Connection error: ' + e.message);
+            }
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('Delete this project?')) return;
+            try {
+                const response = await fetch(`${API_URL}/projects/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadAllData();
+                } else {
+                    showError('projErrorMessage', 'Failed to delete project');
+                }
+            } catch (e) {
+                showError('projErrorMessage', 'Error: ' + e.message);
+            }
+        }
+
+        function clearProjectForm() {
+            document.getElementById('projName').value = '';
+            document.getElementById('projClient').value = '';
+            document.getElementById('projStatus').value = '';
+            document.getElementById('projStart').value = new Date().toISOString().split('T')[0];
+            document.getElementById('projRevenue').value = '';
+            document.getElementById('projLead').value = '';
+            document.getElementById('projNotes').value = '';
+            selectedProjTechs = [];
+            updateProjTechDisplay();
+        }
+
+        // ==================== DATA LOADING ====================
+
+        async function loadAllData() {
+            await loadTasks();
+            await loadProjects();
+        }
+
+        async function loadTasks() {
+            try {
+                const response = await fetch(`${API_URL}/tasks`);
+                allTasks = await response.json();
+                displayTodayTasks();
+            } catch (e) {
+                console.error('Error loading tasks:', e);
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${API_URL}/projects`);
+                allProjects = await response.json();
+                displayProjects();
+            } catch (e) {
+                console.error('Error loading projects:', e);
+            }
+        }
+
+        function displayTodayTasks() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTasks = allTasks.filter(t => t.taskDate === today);
+            const container = document.getElementById('todayTasksList');
+
+            if (todayTasks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div>No tasks logged for today</div>';
+                return;
+            }
+
+            container.innerHTML = todayTasks.map(task => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">${task.taskName}</div>
+                        <span class="card-status" data-status="${task.taskStatus}">${task.taskStatus}</span>
+                    </div>
+                    <div class="card-details">
+                        <div class="card-detail">
+                            <div class="card-detail-label">Project</div>
+                            <div>${task.taskProject}</div>
+                        </div>
+                        <div class="card-detail">
+                            <div class="card-detail-label">Time</div>
+                            <div>${task.taskEstimated}m / ${task.taskActual}m</div>
+                        </div>
+                        <div class="card-detail">
+                            <div class="card-detail-label">Tech</div>
+                            <div>${task.technologies.join(', ')}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary btn-small" onclick="deleteTask(${task.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayProjects() {
+            const container = document.getElementById('projectsList');
+
+            if (allProjects.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📌</div>No projects created yet</div>';
+                return;
+            }
+
+            container.innerHTML = allProjects.map(proj => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">${proj.projName}</div>
+                        <span class="card-status" data-status="${proj.projStatus}">${proj.projStatus}</span>
+                    </div>
+                    <div class="card-details">
+                        <div class="card-detail">
+                            <div class="card-detail-label">Client</div>
+                            <div>${proj.projClient}</div>
+                        </div>
+                        <div class="card-detail">
+                            <div class="card-detail-label">Start Date</div>
+                            <div>${proj.projStart}</div>
+                        </div>
+                        <div class="card-detail">
+                            <div class="card-detail-label">Revenue</div>
+                            <div>Rs.${proj.projRevenue.toLocaleString()}</div>
+                        </div>
+                        <div class="card-detail">
+                            <div class="card-detail-label">Tech</div>
+                            <div>${proj.technologies.join(', ')}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-danger btn-small" onclick="deleteProject(${proj.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== DASHBOARD ====================
+
+        async function loadDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTasks = allTasks.filter(t => t.taskDate === today);
+
+            const totalTasks = todayTasks.length;
+            const totalTime = todayTasks.reduce((sum, t) => sum + t.taskActual, 0);
+            const totalRevenue = todayTasks.reduce((sum, t) => sum + t.taskRevenue, 0);
+            const estTime = todayTasks.reduce((sum, t) => sum + t.taskEstimated, 0);
+            const efficiency = estTime > 0 ? Math.round((estTime / totalTime) * 100) : 0;
+
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${totalTasks}</div>
+                    <div class="stat-label">Tasks Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${Math.round(totalTime / 60 * 10) / 10}h</div>
+                    <div class="stat-label">Time Logged</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${efficiency}%</div>
+                    <div class="stat-label">Efficiency</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">Rs.${totalRevenue.toLocaleString()}</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+            `;
+
+            // Project breakdown
+            const projectMap = {};
+            allTasks.forEach(task => {
+                if (!projectMap[task.taskProject]) {
+                    projectMap[task.taskProject] = { tasks: 0, status: new Set(), time: 0, revenue: 0 };
+                }
+                projectMap[task.taskProject].tasks++;
+                projectMap[task.taskProject].status.add(task.taskStatus);
+                projectMap[task.taskProject].time += task.taskActual;
+                projectMap[task.taskProject].revenue += task.taskRevenue;
+            });
+
+            const tbody = document.getElementById('dashboardTableBody');
+            tbody.innerHTML = Object.entries(projectMap).map(([proj, data]) => `
+                <tr>
+                    <td>${proj}</td>
+                    <td>${data.tasks}</td>
+                    <td>${Array.from(data.status).join(', ')}</td>
+                    <td>${Math.round(data.time / data.tasks)}</td>
+                    <td>Rs.${data.revenue.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ==================== REPORTS ====================
+
+        async function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const reportDate = document.getElementById('reportDate').value;
+
+            try {
+                const response = await fetch(`${API_URL}/report`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: reportType, date: reportDate })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('reportOutput').textContent = data.report;
+                    showMessage('reportSuccessMessage', '✅ Report generated successfully!');
+                } else {
+                    const error = await response.json();
+                    showError('reportErrorMessage', error.error || 'Failed to generate report');
+                }
+            } catch (e) {
+                showError('reportErrorMessage', 'Error: ' + e.message);
+            }
+        }
+
+        async function downloadExcel() {
+            try {
+                const response = await fetch(`${API_URL}/export`);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ba_task_manager_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showMessage('reportSuccessMessage', '✅ Excel file downloaded!');
+            } catch (e) {
+                showError('reportErrorMessage', 'Download failed: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
